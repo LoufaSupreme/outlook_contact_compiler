@@ -31,7 +31,7 @@ def compile_contacts(input_wb, output_wb):
     output_worksheet = output_wb.active
 
     for i in range(2, input_worksheet.max_row + 1):
-        from_email = input_worksheet['B' + str(i)].value
+        from_email = input_worksheet['B' + str(i)].value.lower()
         if from_email[0] != '/':
             try:
                 emails_found.index(from_email)
@@ -59,6 +59,7 @@ def compile_contacts(input_wb, output_wb):
         if len(to_emails) > 0:
             for j in range(0, len(to_emails)):
                 if len(to_emails[j]) > 0 and to_emails[j][0] != '/':
+                    to_emails[j] = to_emails[j].lower()
                     try:
                         emails_found.index(to_emails[j])
                     except:
@@ -85,6 +86,7 @@ def compile_contacts(input_wb, output_wb):
         if len(cc_emails) > 0:
             for j in range(0, len(cc_emails)):
                 if cc_emails[j][0] != '/':
+                    cc_emails[j] = cc_emails[j].lower()
                     try:
                         emails_found.index(cc_emails[j])
                     except:
