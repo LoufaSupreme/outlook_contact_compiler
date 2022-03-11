@@ -20,8 +20,8 @@ def open_output(name):
         return
 
 def compile_name(full_name):
-    first = full_name[0] if len(full_name) > 0 and "@" not in full_name[0] else ""
-    last = full_name[1] if len(full_name) > 1 else ""
+    first = full_name[0].strip('\'').strip(',') if len(full_name) > 0 and "@" not in full_name[0] else ""
+    last = full_name[1].strip('\'').strip(',') if len(full_name) > 1 else ""
     return {'first': first, 'last': last}
 
 def compile_contacts(input_wb, output_wb):    
