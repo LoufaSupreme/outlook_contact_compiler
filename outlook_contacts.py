@@ -31,7 +31,11 @@ def compile_contacts(input_wb, output_wb):
     output_worksheet = output_wb.active
 
     for i in range(2, input_worksheet.max_row + 1):
-        from_email = input_worksheet['B' + str(i)].value.lower()
+        try:
+            from_email = input_worksheet['B' + str(i)].value.lower()
+        except Exception as e:
+            print(e, f'on line {i}')
+            continue
         if from_email[0] != '/':
             try:
                 emails_found.index(from_email)
@@ -113,6 +117,6 @@ def compile_contacts(input_wb, output_wb):
 
 
 if __name__ == '__main__':
-    input_wb = open_input('Outlook Contacts_Mar 2022.xlsx')
+    input_wb = open_input('dan_contacts_14MAR2022.xlsx')
     output_wb = open_output('compiled_contacts.xlsx')
     compile_contacts(input_wb, output_wb)
