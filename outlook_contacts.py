@@ -1,28 +1,35 @@
 import openpyxl # must use version 2.6.2
 import re
 
-def open_input(name):
+def open_wb(name):
     try:
-        input_wb = openpyxl.load_workbook(name)
+        wb = openpyxl.load_workbook(name)
         print('Successfully loaded input worksheet')
-        return input_wb
+        return wb
     except Exception as e:
         print(e)
         return
 
-def open_output(name):
-    try:
-        output_wb = openpyxl.load_workbook(name)
-        print('Successfully loaded output worksheet')
-        return output_wb
-    except Exception as e:
-        print(e)
-        return
 
 def compile_name(full_name):
     first = full_name[0].strip('\'').strip(',') if len(full_name) > 0 and "@" not in full_name[0] else ""
     last = full_name[1].strip('\'').strip(',') if len(full_name) > 1 else ""
     return {'first': first, 'last': last}
+
+def remove_duplicates(master_wb, comparison_wb):
+    master_sheet = master_wb.active
+    comparison_sheet = comparison_wb.active
+    for i in range(comparison_sheet.max_row, 1, -1):
+        comparison_email = comparison_sheet['A' + str(i)].value
+        for j in range(2, master_sheet.max_row + 1):
+            master_email = master_sheet['A' + str(j)].value
+            if master_email == comparison_email:
+                print(f'found match: {master_email} = {comparison_email}')
+                comparison_sheet.delete_rows(i)
+                break
+    print('Removed duplicates')
+    comparison_wb.save('compiled_noDuplicates.xlsx')
+
 
 def compile_contacts(input_wb, output_wb):    
     emails_found = []
@@ -117,6 +124,9 @@ def compile_contacts(input_wb, output_wb):
 
 
 if __name__ == '__main__':
-    input_wb = open_input('dan_contacts_14MAR2022.xlsx')
-    output_wb = open_output('compiled_contacts.xlsx')
-    compile_contacts(input_wb, output_wb)
+    # input_wb = open_wb('dan_contacts_14MAR2022.xlsx')
+    # output_wb = open_wb('compiled_contacts.xlsx')
+    # compile_contacts(input_wb, output_wb)
+    master_wb = open_wb('josh_compiled_contacts_final.xlsx')
+    comparison_wb = open_wb('dan_compiled_contacts.xlsx')
+    remove_duplicates(master_wb, comparison_wb) 
