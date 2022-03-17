@@ -1,6 +1,7 @@
 import openpyxl # must use version 2.6.2
 import re
 
+# open an excel workbook and return an openpyxl workbook instance
 def open_wb(name):
     try:
         wb = openpyxl.load_workbook(name)
@@ -10,12 +11,14 @@ def open_wb(name):
         print(e)
         return
 
-
+# format first and last name
 def compile_name(full_name):
     first = full_name[0].strip('\'').strip(',') if len(full_name) > 0 and "@" not in full_name[0] else ""
     last = full_name[1].strip('\'').strip(',') if len(full_name) > 1 else ""
     return {'first': first, 'last': last}
 
+# compares an excel sheet to another "master" excel sheet for duplicate email addresses
+# if duplicates are found, removes those rows from the comparison wb and saves a new copy
 def remove_duplicates(master_wb, comparison_wb):
     master_sheet = master_wb.active
     comparison_sheet = comparison_wb.active
@@ -30,7 +33,8 @@ def remove_duplicates(master_wb, comparison_wb):
     print('Removed duplicates')
     comparison_wb.save('compiled_noDuplicates.xlsx')
 
-
+# takes a spreadsheet of a list of To, From and CC names/emails and copies unique/valid entries to a new output wb
+# also pulls out company name from email domain name
 def compile_contacts(input_wb, output_wb):    
     emails_found = []
     current_row_in_results = 2
@@ -123,10 +127,19 @@ def compile_contacts(input_wb, output_wb):
     return output_wb.save('compiled_contacts.xlsx')
 
 
+def consolidate_raw_list(input_wb_name, output_wb_name):
+    input_wb = open_wb(input_wb_name)
+    output_wb = open_wb(output_wb_name)
+    compile_contacts(input_wb, output_wb)
+
+
+def compare_and_remove_duplicates(master_wb_name, comparison_wb_name):
+    master_wb = open_wb(master_wb_name)
+    comparison_wb = open_wb(comparison_wb_name)
+    remove_duplicates(master_wb, comparison_wb)
+
+
 if __name__ == '__main__':
-    # input_wb = open_wb('dan_contacts_14MAR2022.xlsx')
-    # output_wb = open_wb('compiled_contacts.xlsx')
-    # compile_contacts(input_wb, output_wb)
-    master_wb = open_wb('josh_compiled_contacts_final.xlsx')
-    comparison_wb = open_wb('dan_compiled_contacts.xlsx')
-    remove_duplicates(master_wb, comparison_wb) 
+    consolidate_raw_list('heather_contacts_17MAR2022.xlsx', 'compiled_contacts.xlsx')
+    compare_and_remove_duplicates('josh_compiled_contacts_final.xlsx','compiled_contacts.xlsx')
+    
